@@ -1,0 +1,232 @@
+# Jenkins Configuration as Code (JCasC) Configuration File
+
+jenkins:
+  systemMessage: "Jenkins Configuration as Code - Managed by JCasC"
+  numExecutors: 2
+  mode: NORMAL
+  scmCheckoutRetryCount: 3
+  disableRememberMe: false
+  
+  globalNodeProperties:
+    - envVars:
+        env:
+          - key: "JAVA_HOME"
+            value: "/usr/lib/jvm/java-11-openjdk-amd64"
+          - key: "MAVEN_HOME"
+            value: "/usr/share/maven"
+          - key: "GRADLE_HOME"
+            value: "/usr/share/gradle"
+
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: "${JENKINS_ADMIN_ID}"
+          password: "${JENKINS_ADMIN_PASSWORD}"
+          properties:
+            - "hudson.security.HudsonPrivateSecurityRealm$Details"
+            - "hudson.tasks.Mailer$UserProperty"
+            - "hudson.tasks.Mailer$UserProperty":
+                emailAddress: "${JENKINS_ADMIN_EMAIL}"
+
+  authorizationStrategy:
+    loggedInUsersCanDoAnything:
+      allowAnonymousRead: false
+
+  remotingSecurity:
+    enabled: true
+
+  securityQueue:
+    assumeDeadThresholdMinutes: 5
+
+  clouds:
+    - docker:
+        name: "docker"
+        dockerApi:
+          dockerHost:
+            uri: "unix:///var/run/docker.sock"
+        templates:
+          - labelString: "docker-agent"
+            dockerTemplateBase:
+              image: "jenkins/inbound-agent:latest"
+            remoteFs: "/home/jenkins"
+            connector:
+              attach:
+                user: "jenkins"
+            instanceCapStr: "10"
+            idleMinutes: 5
+            removeVolumes: true
+
+  tools:
+    git:
+      installations:
+        - name: "Default"
+          home: "git"
+    maven:
+      installations:
+        - name: "Maven-3.8.6"
+          home: "/usr/share/maven"
+    jdk:
+      installations:
+        - name: "JDK-11"
+          home: "/usr/lib/jvm/java-11-openjdk-amd64"
+
+  credentials:
+    system:
+      domainCredentials:
+        - credentials:
+            - usernamePassword:
+                scope: GLOBAL
+                id: "github-credentials"
+                username: "${GITHUB_USERNAME}"
+                password: "${GITHUB_TOKEN}"
+                description: "GitHub Personal Access Token"
+            - usernamePassword:
+                scope: GLOBAL
+                id: "aws-credentials"
+                username: "${AWS_ACCESS_KEY_ID}"
+                password: "${AWS_SECRET_ACCESS_KEY}"
+                description: "AWS Access Credentials"
+            - usernamePassword:
+                scope: GLOBAL
+                id: "docker-registry-credentials"
+                username: "${DOCKER_REGISTRY_USERNAME}"
+                password: "${DOCKER_REGISTRY_PASSWORD}"
+                description: "Docker Registry Credentials"
+            # - string: # COMMENTED: Slack not configured in minimal setup
+                # scope: GLOBAL
+                # id: "slack-token"
+                # secret: "${SLACK_TOKEN}"
+                # description: "Slack Bot Token"
+            # - usernamePassword: # COMMENTED: SMTP not configured in minimal setup
+                # scope: GLOBAL
+                # id: "smtp-credentials"
+                # username: "${SMTP_USERNAME}"
+                # password: "${SMTP_PASSWORD}"
+                # description: "SMTP Email Credentials"
+            # - string: # COMMENTED: SonarQube not configured in minimal setup
+                # scope: GLOBAL
+                # id: "sonar-token"
+                # secret: "${SONAR_TOKEN}"
+                # description: "SonarQube Token"
+
+  # jobs: # COMMENTED: Script-based job creation not working - will create manually
+    # - script: >
+        # folder('CI-CD-Pipelines') {
+          # description('Folder for CI/CD Pipeline Jobs')
+        # }
+        # 
+        # folder('CI-CD-Pipelines/Applications') {
+          # description('Application-specific pipeline jobs')
+        # }
+        # 
+        # folder('CI-CD-Pipelines/Infrastructure') {
+          # description('Infrastructure pipeline jobs')
+        # }
+        # 
+        # multibranchPipelineJob('CI-CD-Pipelines/Applications/sample-app') {
+          # description('Sample application CI/CD pipeline')
+          # branchSources {
+            # github {
+              # id('github-source')
+              # scanCredentialsId('github-credentials')
+              # repoOwner('rajops-lab')
+              # repository('sample-app')
+              # checkoutCredentialsId('github-credentials')
+              # traits {
+                # gitHubBranchDiscovery {
+                  # strategyId(1)
+                # }
+                # gitHubTagDiscovery()
+              # }
+            # }
+          # }
+          # orphanedItemStrategy {
+            # discardOldItems {
+              # numToKeep(10)
+            # }
+          # }
+          # factory {
+            # workflowBranchProjectFactory {
+              # scriptPath('Jenkinsfile')
+            # }
+          # }
+        # }
+
+  unclassified:
+    location:
+      url: "${JENKINS_URL}"
+      adminAddress: "${JENKINS_ADMIN_EMAIL}"
+    
+    # mailer: # COMMENTED: No SMTP configured in minimal setup
+      # smtpHost: "${SMTP_HOST}"
+      # smtpPort: 587
+      # smtpAuth: true
+      # smtpAuthUsername: "${SMTP_USERNAME}"
+      # smtpAuthPassword: "${SMTP_PASSWORD}"
+      # useSsl: true
+      # charset: "UTF-8"
+      # defaultSuffix: "@company.com"
+    
+    # slack: # COMMENTED: No Slack token configured in minimal setup
+      # teamDomain: "your-team"
+      # token: "${SLACK_TOKEN}"
+      # room: "#jenkins-notifications"
+      # startNotification: true
+      # notifySuccess: true
+      # notifyAborted: true
+      # notifyNotBuilt: true
+      # notifyUnstable: true
+      # notifyRegression: true
+      # notifyFailure: true
+      # notifyBackToNormal: true
+      # notifyRepeatedFailure: true
+      # includeTestResults: true
+      # includeCustomMessage: true
+      # customMessage: "Build Status: ${env.BUILD_STATUS}"
+      # sendAs: "Jenkins"
+      # commitInfoChoice: "AUTHORS_AND_TITLES"
+      # includeCustomMessage: true
+      # customMessage: "Pipeline: ${env.JOB_NAME} - Build: ${env.BUILD_NUMBER}"
+    
+    # sonarGlobalConfiguration: # COMMENTED: No SonarQube configured in minimal setup
+      # installations:
+        # - name: "SonarQube"
+          # serverUrl: "${SONAR_URL}"
+          # credentialsId: "sonar-token"
+    
+    timestamperConfig:
+      allPipelines: true
+      elapsedTimeFormat: "'<b>'HH:mm:ss.S'</b> '"
+      systemTimeFormat: "'<b>'HH:mm:ss'</b> '"
+    
+    buildStepOperation:
+      enabled: true
+    
+    globalLibraries:
+      libraries:
+        - name: "shared-library"
+          defaultVersion: "main"
+          retriever:
+            modernSCM:
+              scm:
+                git:
+                  remote: "https://github.com/rajops-lab/jenkins-shared-library.git"
+                  credentialsId: "github-credentials"
+    
+    workflowLibGlobalConfig:
+      libraries:
+        - name: "shared-library"
+          defaultVersion: "main"
+          retriever:
+            modernSCM:
+              scm:
+                git:
+                  remote: "https://github.com/rajops-lab/jenkins-shared-library.git"
+                  credentialsId: "github-credentials"
+
+  security:
+    apiToken:
+      creationOfLegacyTokenEnabled: false
+      tokenGenerationOnCreationEnabled: false
+      usageStatisticsEnabled: true

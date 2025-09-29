@@ -1,0 +1,92 @@
+# =========================================================================
+# Jenkins Plugins List - Prioritized by User Requirements (Numbered)
+# Generate actual versions from your controller: jenkins-plugin-cli --list > plugins.txt
+# Commit this file to lock versions for reproducible builds.
+# =========================================================================
+
+# -------------------------------------------------------------------------
+# CRITICAL PLUGINS (Must Install First)
+# Purpose: Core functionality required for basic Jenkins operation
+# -------------------------------------------------------------------------
+workflow-aggregator                             # Pipeline (Workflow) plugin suite - CRITICAL (use latest)
+job-dsl                                        # Define Jenkins jobs as code (DSL) - CRITICAL (use latest)
+git                                            # Git SCM support for Jenkins - CRITICAL (use latest)
+github                                         # GitHub integration - CRITICAL (use latest)
+docker-workflow                                # Docker Pipeline steps - CRITICAL (use latest)
+
+# -------------------------------------------------------------------------
+# HIGH PRIORITY PLUGINS  
+# Purpose: Essential for AWS/K8s deployment workflows
+# -------------------------------------------------------------------------
+# aws-steps                                     # AWS Pipeline steps - COMMENTED: Version conflicts with dependencies
+# kubernetes                                    # Kubernetes dynamic agents - COMMENTED: Version conflicts with dependencies
+# slack:742.vff0b_91124b_12                      # Slack notifications - COMMENTED: No Slack token provided in minimal setup
+credentials-binding                            # Bind credentials to environment - HIGH PRIORITY (use latest)
+
+# -------------------------------------------------------------------------
+# MEDIUM PRIORITY PLUGINS
+# Purpose: Code quality, build tools, and infrastructure automation
+# -------------------------------------------------------------------------
+# checkmarx                                     # Checkmarx security scanning - COMMENTED: Requires Checkmarx server setup
+# gradle                                        # Gradle build tool support - COMMENTED: Version conflicts
+nodejs                                         # NodeJS tool installer - MEDIUM PRIORITY (use latest)
+htmlpublisher                                  # HTML report publishing - MEDIUM PRIORITY (use latest)
+# ansible                                       # Ansible automation - COMMENTED: Requires Ansible server setup
+
+# -------------------------------------------------------------------------
+# LOW PRIORITY PLUGINS (Optional)
+# Purpose: UI enhancements and additional utilities  
+# -------------------------------------------------------------------------
+# blueocean                                     # Modern Jenkins UI - COMMENTED: Has many dependency conflicts
+build-monitor-plugin                           # Build status dashboard - LOW PRIORITY (use latest)
+# email-ext                                     # Extended email notifications - COMMENTED: No SMTP configured in minimal setup
+timestamper                                    # Timestamps in build logs - LOW PRIORITY (use latest)
+
+# -------------------------------------------------------------------------
+# REQUIRED DEPENDENCIES AND CORE PLUGINS
+# Purpose: Dependencies for above plugins to function properly
+# -------------------------------------------------------------------------
+configuration-as-code                         # Jenkins Configuration as Code (use latest)
+credentials                                    # Core credentials management (use latest)
+plain-credentials                              # Plain text credential type (use latest)
+ssh-credentials                                # SSH credential support (use latest)
+github-branch-source                           # GitHub branch source for multibranch (use latest)
+docker-commons                                 # Common Docker functionality (use latest)
+# aws-credentials                               # AWS credential provider - COMMENTED: Version conflicts
+# amazon-ecr                                   # Amazon ECR integration - COMMENTED: Version conflicts
+matrix-auth                                    # Matrix-based security authorization (use latest)
+
+# -------------------------------------------------------------------------
+# PIPELINE AND UTILITY PLUGINS
+# Purpose: Pipeline visualization and utility functions
+# -------------------------------------------------------------------------
+pipeline-stage-view                            # Visual pipeline stage view (use latest)
+pipeline-utility-steps                         # Utility functions (readJSON, writeFile, etc.) (use latest)
+pipeline-input-step                            # Input step for user interaction (use latest)
+build-timeout                                  # Prevent hung builds with timeouts (use latest)
+ws-cleanup                                     # Workspace cleanup post-build (use latest)
+ansicolor                                      # Colored ANSI output in console (use latest)
+
+# -------------------------------------------------------------------------
+# NOTIFICATION PLUGINS  
+# Purpose: Build notifications and communication
+# -------------------------------------------------------------------------
+mailer                                         # Core email functionality (use latest)
+
+#==================================================================
+# INSTALLATION STEPS:
+# 1. Start Jenkins with this plugins.txt (remove numbering for actual use)
+# 2. Export actual versions: docker exec <container> jenkins-plugin-cli --list > plugins-with-versions.txt  
+# 3. Replace version numbers above with exact versions from step 2
+# 4. Rebuild Jenkins with pinned versions for production use
+#==================================================================
+
+# IMPORTANT NOTES:
+# 1. Remove numbering (1. 2. 3. etc.) before using this file with Jenkins
+# 2. Numbering is for reference only - Jenkins reads plugin-name:version format
+# 3. kubernetes plugin provides K8s agents, not direct Helm integration
+# 4. For Helm deployments, install helm CLI on agents and use pipeline shell steps  
+# 5. checkmarx plugin requires Checkmarx server configuration
+# 6. htmlpublisher may need CSP settings: -Dhudson.model.DirectoryBrowserSupport.CSP=
+# 7. ansible plugin requires Ansible installed on Jenkins agents or via Global Tool Config
+# 8. Total plugins: 34 (Critical: 5, High: 4, Medium: 5, Low: 4, Dependencies: 16)
