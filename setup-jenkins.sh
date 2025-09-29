@@ -93,10 +93,34 @@ else
     echo "Environment file already exists."
 fi
 
+# Create production-level directory structure
+echo "Creating production directory structure..."
+mkdir -p ~/jenkins-setup/{backups,logs,secrets,jobs,scripts,monitoring}
+
+# Create Jenkins job directories for XML files
+mkdir -p ~/jenkins-setup/jobs/{ci-cd-pipelines,infrastructure,applications,utilities}
+
+# Create backup and monitoring directories
+mkdir -p ~/jenkins-setup/backups/{daily,weekly,monthly}
+mkdir -p ~/jenkins-setup/monitoring/{metrics,alerts,reports}
+
+# Create log directories
+mkdir -p ~/jenkins-setup/logs/{jenkins,docker,system}
+
+# Create secrets directory (secure permissions)
+mkdir -p ~/jenkins-setup/secrets
+chmod 700 ~/jenkins-setup/secrets
+
+# Create scripts directory for automation
+mkdir -p ~/jenkins-setup/scripts/{backup,maintenance,deployment}
+
 # Set proper permissions
 echo "Setting permissions..."
 sudo chown -R $USER:$USER ~/jenkins-setup
 chmod +x setup-jenkins.sh
+chmod 755 ~/jenkins-setup/jobs
+chmod 755 ~/jenkins-setup/scripts
+chmod 644 ~/jenkins-setup/logs
 
 echo "=========================================="
 echo "Setup completed successfully!"
@@ -116,6 +140,23 @@ echo "   docker-compose logs -f jenkins"
 echo ""
 echo "5. Stop Jenkins:"
 echo "   docker-compose down"
+echo ""
+echo "Production Directory Structure Created:"
+echo "├── jobs/ci-cd-pipelines/     # CI/CD pipeline job XMLs"
+echo "├── jobs/infrastructure/      # Infrastructure job XMLs"
+echo "├── jobs/applications/        # Application job XMLs"
+echo "├── jobs/utilities/           # Utility job XMLs"
+echo "├── backups/daily/            # Daily backups"
+echo "├── backups/weekly/           # Weekly backups"
+echo "├── backups/monthly/          # Monthly backups"
+echo "├── logs/jenkins/             # Jenkins logs"
+echo "├── logs/docker/              # Docker logs"
+echo "├── logs/system/              # System logs"
+echo "├── secrets/                  # Secure credentials (700 permissions)"
+echo "├── scripts/backup/           # Backup scripts"
+echo "├── scripts/maintenance/      # Maintenance scripts"
+echo "├── scripts/deployment/       # Deployment scripts"
+echo "└── monitoring/               # Monitoring data"
 echo ""
 echo "Note: You may need to log out and back in for Docker group changes to take effect."
 echo "=========================================="
